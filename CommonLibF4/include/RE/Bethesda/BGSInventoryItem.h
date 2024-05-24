@@ -180,6 +180,13 @@ namespace RE
 			return func(this, a_stackIterations);
 		}
 
+		float GetTotalWeight()
+		{
+			using func_t = decltype(&BGSInventoryItem::GetTotalWeight);
+			REL::Relocation<func_t> func{ REL::ID(571297) };
+			return func(this);
+		}
+
 		// members
 		TESBoundObject* object;            // 00
 		BSTSmartPointer<Stack> stackData;  // 08

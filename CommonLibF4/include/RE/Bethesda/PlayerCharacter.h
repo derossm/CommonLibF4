@@ -388,6 +388,13 @@ namespace RE
 			return func(this, a_unk);
 		}
 
+		bool HasLOSToTarget(TESObjectREFR* a_target, bool& a_unk)
+		{
+			using func_t = decltype(&PlayerCharacter::HasLOSToTarget);
+			REL::Relocation<func_t> func{ REL::ID(449775) };
+			return func(this, a_target, a_unk);
+		}
+
 		// members
 		BSSpinLock actorToDisplayOnHUDLock;                                                     // 628
 		BSSpinLock questTargetLock;                                                             // 630

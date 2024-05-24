@@ -96,4 +96,14 @@ namespace RE
 			return func();
 		}
 	}
+
+	namespace MiscStatManager
+	{
+		inline bool QueryStat(BSFixedString* a_statName, int* a_statValue)
+		{
+			using func_t = decltype(&QueryStat);
+			REL::Relocation<func_t> func{ REL::ID(1315743) };
+			return func(a_statName, a_statValue);
+		}
+	}
 }
