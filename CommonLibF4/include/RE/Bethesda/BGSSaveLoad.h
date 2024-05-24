@@ -13,7 +13,6 @@ namespace RE
 	}
 
 	class BGSSaveLoadFile;
-	class BGSSaveLoadFileEntry;
 	class BSEventFlag;
 	class BSSaveDataSystemUtilityFile;
 
@@ -88,6 +87,74 @@ namespace RE
 	};
 	static_assert(sizeof(BSSaveDataSystemUtilityImage) == 0x18);
 
+	class SavefileMetadata
+	{
+	public:
+		void FillDataFromFileName(char* a_fileName)
+		{
+			using func_t = decltype(&SavefileMetadata::FillDataFromFileName);
+			REL::Relocation<func_t> func{ REL::ID(116131) };
+			return func(this, a_fileName);
+		}
+
+		char FileNameA[260];
+		_FILETIME CreationTimestamp;
+		std::uint64_t PlayerLevel;
+		std::uint32_t FilenameVersion;
+		std::uint32_t SaveGameNumber;
+		std::uint64_t PlayerID;
+		BSStringT<char> PlayerName;
+		BSStringT<char> PlayerLocID;
+		BSStringT<char> PlayTime;
+		bool IsValid;
+		bool HasSaveNumber;
+		bool NeedsSync;
+		bool Modded;
+		bool Survival;
+	};
+
+	class BGSSaveLoadFileEntry
+	{
+	public:
+
+		void DeleteGame()
+		{
+			using func_t = decltype(&BGSSaveLoadFileEntry::DeleteGame);
+			REL::Relocation<func_t> func{ REL::ID(91575) };
+			return func(this);
+		}
+
+		void LoadData()
+		{
+			using func_t = decltype(&BGSSaveLoadFileEntry::LoadData);
+			REL::Relocation<func_t> func{ REL::ID(1100644) };
+			return func(this);
+		}
+
+		// members
+		char* fileName;					 // 000
+		char* playerName;				 // 008
+		char* playerTitle;				 // 010
+		char* location;					 // 018
+		char* playTime;					 // 020
+		char* raceName;					 // 028
+		int version;					 // 030
+		std::uint32_t saveGameNumber;    // 034
+		std::uint32_t playerLevel;       // 038
+		float levelProgress;			 // 03C
+		float levelThreshold;			 // 040
+		std::uint32_t screenshotWidth;   // 044
+		std::uint32_t screenshotHeight;  // 048
+		std::uint32_t screenshotOffset;  // 04C
+		_FILETIME fileTime;				 // 050
+		_FILETIME saveTime;				 // 058
+		int deviceID;					 // 060
+		bool loaded;					 // 064
+		bool corrupt;					 // 065
+		bool needsSync;					 // 066
+	};
+	static_assert(sizeof(BGSSaveLoadFileEntry) == 0x68);
+
 	class BGSSaveLoadManager :
 		public BSTEventSink<SPECIALMenuEvent::NameChangedEvent>  // 00
 	{
@@ -132,6 +199,20 @@ namespace RE
 			using func_t = decltype(&BGSSaveLoadManager::QueueSaveLoadTask);
 			REL::Relocation<func_t> func{ REL::ID(1487308) };
 			return func(this, a_task);
+		}
+
+		std::uint32_t BuildSaveGameList(std::uint64_t a_playerID)
+		{
+			using func_t = decltype(&BGSSaveLoadManager::BuildSaveGameList);
+			REL::Relocation<func_t> func{ REL::ID(1342984) };
+			return func(this, a_playerID);
+		}
+
+		bool GetSaveDirectoryPath(char* a_directoryPath)
+		{
+			using func_t = decltype(&BGSSaveLoadManager::GetSaveDirectoryPath);
+			REL::Relocation<func_t> func{ REL::ID(1569549) };
+			return func(this, a_directoryPath);
 		}
 
 		// members
