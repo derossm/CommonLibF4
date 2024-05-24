@@ -5,6 +5,7 @@
 #include "RE/Bethesda/BSLock.h"
 #include "RE/Bethesda/BSPointerHandle.h"
 #include "RE/Bethesda/BSSoundHandle.h"
+#include "RE/Bethesda/BSSpring.h"
 #include "RE/Bethesda/BSTArray.h"
 #include "RE/Bethesda/BSTEvent.h"
 #include "RE/Bethesda/BSTSingleton.h"
@@ -244,21 +245,17 @@ namespace RE
 	class __declspec(novtable) AimModel
 	{
 	public:
-		BGSAimModel::Data aimModelData;					// 00 // confirmed
-		NiPoint2 unk_1;									// 40
-		NiPoint2 unk_2;									// 48
-		float aimModelRecoilSpringForce;				// 50
-		NiPoint2 postSpringStateOrientation;			// 54
-		NiPoint2 unk_4;									// 5C
-		float aimModelRecoilDiminishSightsSpringMult;	// 64
-		NiPoint2 aimModelOrientation;					// 68
-		NiPoint2 unk_7;									// 70
-		NiPoint2 unk_8;									// 78
-		NiPoint2 playerViewAnglesRad;					// 80 confirmed
-		Actor* owningActor;								// 88
-		float currentAimModelConeSize;					// 90
-		float msSinceLastShot;							// 94 
-		int successiveShotsFired;						// 98 confirmed
+		BGSAimModel::Data aimModelData;							// 00
+		BSSpring::SpringState<NiPoint2> recoilSpring;			// 40
+		BSSpring::SpringState<NiPoint2> recoilDiminishSpring;	// 54
+		NiPoint2 TargetRecoilRad;								// 68
+		NiPoint2 CurrentRecoilRad;								// 70
+		NiPoint2 PrevRecoilRad;									// 78
+		NiPoint2 PreShotAimRad;									// 80
+		Actor* actor;											// 88
+		float fireConeSize;										// 90
+		float lastShotDeltaMs;									// 94
+		unsigned int continuousShots;							// 98
 	};
 	static_assert(sizeof(AimModel) == 0xA0);
 
@@ -1252,6 +1249,20 @@ namespace RE
 			using func_t = decltype(&Actor::IsSneaking);
 			REL::Relocation<func_t> func{ REL::ID(1173627) };
 			return func(this);
+		}
+
+		float GetLooking()
+		{
+			using func_t = decltype(&Actor::GetLooking);
+			REL::Relocation<func_t> func{ REL::ID(637234) };
+			return func(this);
+		}
+
+		int64_t Disarm(Actor* a_disarmer)
+		{
+			using func_t = decltype(&Actor::Disarm);
+			REL::Relocation<func_t> func{ REL::ID(1210102) };
+			return func(this, a_disarmer);
 		}
 
 		// members
