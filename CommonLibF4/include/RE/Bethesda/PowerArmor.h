@@ -59,6 +59,13 @@ namespace RE
 			return func(a_itemData);
 		}
 
+		inline bool PlaySoundAtPlayer(BGSSoundDescriptorForm* a_soundDescriptor)
+		{
+			using func_t = decltype(&PlaySoundAtPlayer);
+			REL::Relocation<func_t> func{ REL::ID(994664) };
+			return func(a_soundDescriptor);
+		}
+
 		inline void SyncFurnitureVisualsToInventory(TESObjectREFR* a_furniture, bool a_force3DUpdate, BGSInventoryItem* a_tempItemToAdd, bool a_hideCore)
 		{
 			using func_t = decltype(&SyncFurnitureVisualsToInventory);

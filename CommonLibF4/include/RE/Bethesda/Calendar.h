@@ -40,6 +40,13 @@ namespace RE
 		[[nodiscard]] float GetHoursPassed() const noexcept;
 		[[nodiscard]] std::uint32_t GetMonth() const noexcept;
 
+		int64_t GetDaysPassed()
+		{
+			using func_t = decltype(&Calendar::GetDaysPassed);
+			REL::Relocation<func_t> func{ REL::ID(1209930) };
+			return func(this);
+		}
+
 		// members
 		TESGlobal* gameYear;            // 08
 		TESGlobal* gameMonth;           // 10

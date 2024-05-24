@@ -896,6 +896,28 @@ namespace RE
 			return func(this, a_active);
 		}
 
+		bool WornHasKeyword(BGSKeyword* a_keyword)
+		{
+			using func_t = decltype(&RE::TESObjectREFR::WornHasKeyword);
+			REL::Relocation<func_t> func{ REL::ID(900857) };
+			return func(this, a_keyword);
+		}
+
+		MapMarkerData* GetMapMarkerData()
+		{
+			using func_t = decltype(&RE::TESObjectREFR::GetMapMarkerData);
+			REL::Relocation<func_t> func{ REL::ID(253640) };
+			return func(this);
+			
+		}
+
+		char* GetDisplayFullName()
+		{
+			using func_t = decltype(&RE::TESObjectREFR::GetDisplayFullName);
+			REL::Relocation<func_t> func{ REL::ID(1212056) };
+			return func(this);
+		}
+
 		// members
 		TESObjectCELL* parentCell;                 // 0B8
 		OBJ_REFR data;                             // 0C0

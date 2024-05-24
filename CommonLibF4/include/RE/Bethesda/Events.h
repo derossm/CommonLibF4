@@ -481,6 +481,16 @@ namespace RE
 	};
 	static_assert(sizeof(TESDeathEvent) == 0x18);
 
+	class DeathEventSource : public BSTEventSource<TESDeathEvent>
+	{
+	public:
+		[[nodiscard]] static DeathEventSource* GetSingleton()
+		{
+			REL::Relocation<DeathEventSource*> singleton{ REL::ID(1058809) };
+			return singleton.get();
+		}
+	};
+
 	struct TESFurnitureEvent
 	{
 	public:
