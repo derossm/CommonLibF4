@@ -35,7 +35,7 @@ namespace RE
 		fade(0.0),
 		endDistanceCap(0.0),
 		shadowDepthBias(0.0),
-		spotNear(0.0),
+		spotNearClip(0.0),
 		volumetricIntensity(0.0)
 	{}
 }

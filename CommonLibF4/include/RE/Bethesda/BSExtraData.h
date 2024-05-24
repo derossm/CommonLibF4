@@ -604,7 +604,7 @@ namespace RE
 		float fade;					// 04
 		float endDistanceCap;		// 08
 		float shadowDepthBias;		// 0C
-		float spotNear;				// 10
+		float spotNearClip;				// 10
 		float volumetricIntensity;	// 14
 	};
 	static_assert(sizeof(ExtraLightDataStruct) == 0x18);
@@ -692,6 +692,13 @@ namespace RE
 			using func_t = decltype(&ExtraTextDisplayData::GetDisplayName);
 			REL::Relocation<func_t> func{ REL::ID(1523343) };
 			return func(this, a_baseObject);
+		}
+
+		void SetCustomName(const char* a_name)
+		{
+			using func_t = decltype(&ExtraTextDisplayData::SetCustomName);
+			REL::Relocation<func_t> func{ REL::ID(365788) };
+			return func(this, a_name);
 		}
 
 		// members
