@@ -318,8 +318,12 @@ namespace RE
 		[[nodiscard]] float QAnalogValue() const noexcept { return value; }
 		[[nodiscard]] bool QHeldDown(float a_heldDownSecs) const noexcept { return value != 0.0 && a_heldDownSecs <= heldDownSecs; }
 		[[nodiscard]] float QHeldDownSecs() const noexcept { return heldDownSecs; }
+		[[nodiscard]] bool QIsDown() const noexcept { return QIsPressed() && (QHeldDownSecs() == 0.0F); }
+		[[nodiscard]] bool QIsPressed() const noexcept { return QAnalogValue() > 0.0F; }
+		[[nodiscard]] bool QIsRepeating() const noexcept { return QHeldDownSecs() > 0.0F; }
 		[[nodiscard]] bool QJustPressed() const noexcept { return value != 0.0F && heldDownSecs == 0.0F; }
 		[[nodiscard]] bool QReleased(float a_heldDownSecs) const noexcept { return value == 0.0F && a_heldDownSecs <= heldDownSecs; }
+		[[nodiscard]] bool QIsUp() const noexcept { return (QAnalogValue() == 0.0F) && QIsRepeating(); }
 
 		// members
 		float value{ 0.0F };         // 38
