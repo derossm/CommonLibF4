@@ -121,7 +121,7 @@ namespace RE
 				return nullptr;
 			}
 
-			uint32_t formID = 0;
+			TESFormID formID = 0;
 			if (file.second) {
 				formID = file.first->compileIndex << 24;
 				formID += (a_rawFormID & 0x00FFFFFF);
