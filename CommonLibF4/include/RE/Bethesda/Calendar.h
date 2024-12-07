@@ -33,11 +33,11 @@ namespace RE
 
 		[[nodiscard]] static Calendar* GetSingleton()
 		{
-			REL::Relocation<Calendar**> singleton{ REL::ID(1444952) };
+			static REL::Relocation<Calendar**> singleton{ REL::ID(2689092) };
 			return *singleton;
 		}
 
-		[[nodiscard]] float GetHoursPassed() const noexcept;
+		[[nodiscard]] float         GetHoursPassed() const noexcept;
 		[[nodiscard]] std::uint32_t GetMonth() const noexcept;
 
 		int64_t GetDaysPassed()
@@ -48,14 +48,14 @@ namespace RE
 		}
 
 		// members
-		TESGlobal* gameYear;            // 08
-		TESGlobal* gameMonth;           // 10
-		TESGlobal* gameDay;             // 18
-		TESGlobal* gameHour;            // 20
-		TESGlobal* gameDaysPassed;      // 28
-		TESGlobal* timeScale;           // 30
+		TESGlobal*    gameYear;         // 08
+		TESGlobal*    gameMonth;        // 10
+		TESGlobal*    gameDay;          // 18
+		TESGlobal*    gameHour;         // 20
+		TESGlobal*    gameDaysPassed;   // 28
+		TESGlobal*    timeScale;        // 30
 		std::uint32_t midnightsPassed;  // 38
-		float rawDaysPassed;            // 3C
+		float         rawDaysPassed;    // 3C
 	};
 	static_assert(sizeof(Calendar) == 0x40);
 }

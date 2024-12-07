@@ -29,41 +29,30 @@ namespace RE
 			using iterator = value_type*;
 			using const_iterator = const value_type*;
 
-			[[nodiscard]] iterator begin() noexcept { return entries; }
+			[[nodiscard]] iterator       begin() noexcept { return entries; }
 			[[nodiscard]] const_iterator begin() const noexcept { return entries; }
 			[[nodiscard]] const_iterator cbegin() const noexcept { return entries; }
 
-			[[nodiscard]] iterator end() noexcept { return entries + usedEntries; }
+			[[nodiscard]] iterator       end() noexcept { return entries + usedEntries; }
 			[[nodiscard]] const_iterator end() const noexcept { return entries + usedEntries; }
 			[[nodiscard]] const_iterator cend() const noexcept { return entries + usedEntries; }
 
 			// members
 			value_type entries[4];           // 00
 			node_type* nodes[5]{ nullptr };  // ??
-			size_type usedEntries{ 0 };      // ??
+			size_type  usedEntries{ 0 };     // ??
 		};
 
 	private:
 		template <class U>
-		class iterator_base :
-			public boost::stl_interfaces::iterator_interface<
-				iterator_base<U>,
-				std::forward_iterator_tag,
-				U>
+		class iterator_base
 		{
-		private:
-			using super =
-				boost::stl_interfaces::iterator_interface<
-					iterator_base<U>,
-					std::forward_iterator_tag,
-					U>;
-
 		public:
-			using difference_type = typename super::difference_type;
-			using value_type = typename super::value_type;
-			using pointer = typename super::pointer;
-			using reference = typename super::reference;
-			using iterator_category = typename super::iterator_category;
+			using difference_type = std::ptrdiff_t;
+			using value_type = std::remove_const_t<U>;
+			using pointer = value_type*;
+			using reference = value_type&;
+			using iterator_category = std::forward_iterator_tag;
 
 			iterator_base() noexcept = default;
 
@@ -116,15 +105,24 @@ namespace RE
 				return _cur->entries[_pos];
 			}
 
+			[[nodiscard]] pointer operator->() const noexcept
+			{
+				return std::pointer_traits<pointer>::pointer_to(operator*());
+			}
+
 			template <class V>
 			[[nodiscard]] bool operator==(const iterator_base<V>& a_rhs) const noexcept
 			{
 				return _cur == nullptr && a_rhs._cur == nullptr;
 			}
 
-			using super::operator++;
+			template <class V>
+			[[nodiscard]] bool operator!=(const iterator_base<V>& a_rhs) const noexcept
+			{
+				return !operator==(a_rhs);
+			}
 
-			void operator++() noexcept
+			iterator_base& operator++() noexcept
 			{
 				assert(_cur != nullptr);
 				if (++_pos >= _cur->usedEntries) {
@@ -136,6 +134,15 @@ namespace RE
 						push_level();
 					}
 				}
+
+				return *this;
+			}
+
+			iterator_base operator++(int) noexcept
+			{
+				iterator_base tmp{ *this };
+							  operator++();
+				return tmp;
 			}
 
 		protected:
@@ -170,23 +177,23 @@ namespace RE
 			}
 
 			std::stack<node_type*> _queued;
-			node_type* _cur{ nullptr };
-			size_type _pos{ 0 };
+			node_type*             _cur{ nullptr };
+			size_type              _pos{ 0 };
 		};
 
 	public:
 		using iterator = iterator_base<value_type>;
 		using const_iterator = iterator_base<const value_type>;
 
-		[[nodiscard]] iterator begin() noexcept { return iterator{ _root }; }
+		[[nodiscard]] iterator       begin() noexcept { return iterator{ _root }; }
 		[[nodiscard]] const_iterator begin() const noexcept { return const_iterator{ _root }; }
 		[[nodiscard]] const_iterator cbegin() const noexcept { return const_iterator{ _root }; }
 
-		[[nodiscard]] iterator end() noexcept { return {}; }
+		[[nodiscard]] iterator       end() noexcept { return {}; }
 		[[nodiscard]] const_iterator end() const noexcept { return {}; }
 		[[nodiscard]] const_iterator cend() const noexcept { return {}; }
 
-		[[nodiscard]] iterator find(const key_type& a_key) { return do_find<iterator>(a_key); }
+		[[nodiscard]] iterator       find(const key_type& a_key) { return do_find<iterator>(a_key); }
 		[[nodiscard]] const_iterator find(const key_type& a_key) const { return do_find<const_iterator>(a_key); }
 
 		template <class K>
@@ -233,10 +240,10 @@ namespace RE
 			return Iter();
 		}
 
-		std::uint64_t pad{ 0 };             // 00
-		size_type _activeEntry{ 0 };        // 08
-		size_type _allocatedSize{ 0 };      // 0C
-		node_type* _root{ nullptr };        // 10
-		node_type* _availNodes{ nullptr };  // 18
+		std::uint64_t pad{ 0 };                // 00
+		size_type     _activeEntry{ 0 };       // 08
+		size_type     _allocatedSize{ 0 };     // 0C
+		node_type*    _root{ nullptr };        // 10
+		node_type*    _availNodes{ nullptr };  // 18
 	};
 }

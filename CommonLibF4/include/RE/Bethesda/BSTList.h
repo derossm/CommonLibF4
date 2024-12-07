@@ -28,25 +28,14 @@ namespace RE
 		};
 
 		template <class U>
-		class iterator_base :
-			public boost::stl_interfaces::iterator_interface<
-				iterator_base<U>,
-				std::forward_iterator_tag,
-				U>
+		class iterator_base
 		{
-		private:
-			using super =
-				boost::stl_interfaces::iterator_interface<
-					iterator_base<U>,
-					std::forward_iterator_tag,
-					U>;
-
 		public:
-			using difference_type = typename super::difference_type;
-			using value_type = typename super::value_type;
-			using pointer = typename super::pointer;
-			using reference = typename super::reference;
-			using iterator_category = typename super::iterator_category;
+			using difference_type = std::ptrdiff_t;
+			using value_type = std::remove_const_t<U>;
+			using pointer = value_type*;
+			using reference = value_type&;
+			using iterator_category = std::forward_iterator_tag;
 
 			iterator_base() noexcept = default;
 			iterator_base(const iterator_base&) noexcept = default;
@@ -86,6 +75,24 @@ namespace RE
 				return get()->value;
 			}
 
+			[[nodiscard]] pointer operator->() noexcept
+			{
+				return std::pointer_traits<pointer>::pointer_to(operator*());
+			}
+
+			template <class V>
+			[[nodiscard]] bool operator==(const iterator_base<V>& a_rhs) const noexcept
+			{
+				assert(_proxy == a_rhs._proxy);
+				return _cur == a_rhs._cur;
+			}
+
+			template <class V>
+			[[nodiscard]] bool operator!=(const iterator_base<V>& a_rhs) const noexcept
+			{
+				return !operator==(a_rhs);
+			}
+
 			iterator_base& operator++() noexcept
 			{
 				if (_cur) {
@@ -97,19 +104,11 @@ namespace RE
 				return *this;
 			}
 
-			using super::operator++;
-
-			template <class V>
-			[[nodiscard]] bool operator==(const iterator_base<V>& a_rhs) noexcept
+			iterator_base operator++(int) noexcept
 			{
-				assert(_proxy == a_rhs._proxy);
-				return _cur == a_rhs._cur;
-			}
-
-			template <class V>
-			[[nodiscard]] bool operator!=(const iterator_base<V>& a_rhs) noexcept
-			{
-				return !(*this == a_rhs);
+				iterator_base tmp{ *this };
+							  operator++();
+				return tmp;
 			}
 
 		protected:
@@ -130,7 +129,7 @@ namespace RE
 			[[nodiscard]] auto make_mutable() const noexcept { return iterator_base<std::remove_const_t<value_type>>{ _proxy, _cur }; }
 
 		private:
-			BSSimpleList<T>* _proxy{ nullptr };
+			BSSimpleList<T>*          _proxy{ nullptr };
 			std::optional<node_type*> _cur{ nullptr };
 		};
 
@@ -213,15 +212,15 @@ namespace RE
 		// 2)
 		[[nodiscard]] const_reference front() const noexcept { return mutable_reference().front(); }
 
-		[[nodiscard]] iterator before_begin() noexcept { return iterator{ this, std::nullopt }; }
+		[[nodiscard]] iterator       before_begin() noexcept { return iterator{ this, std::nullopt }; }
 		[[nodiscard]] const_iterator before_begin() const noexcept { return mutable_reference().before_begin(); }
 		[[nodiscard]] const_iterator cbefore_begin() const noexcept { return before_begin(); }
 
-		[[nodiscard]] iterator begin() noexcept { return !empty() ? iterator{ this, std::addressof(_root) } : end(); }
+		[[nodiscard]] iterator       begin() noexcept { return !empty() ? iterator{ this, std::addressof(_root) } : end(); }
 		[[nodiscard]] const_iterator begin() const noexcept { mutable_reference().begin(); }
 		[[nodiscard]] const_iterator cbegin() const noexcept { begin(); }
 
-		[[nodiscard]] iterator end() noexcept { return iterator{ this, nullptr }; }
+		[[nodiscard]] iterator       end() noexcept { return iterator{ this, nullptr }; }
 		[[nodiscard]] const_iterator end() const noexcept { return mutable_reference().end(); }
 		[[nodiscard]] const_iterator cend() const noexcept { return end(); }
 
@@ -324,8 +323,8 @@ namespace RE
 		// 2)
 		void resize(size_type a_count, const value_type& a_value)
 		{
-			size_type n = static_cast<size_type>(-1);
-			auto iter = cbefore_begin();
+			size_type      n = static_cast<size_type>(-1);
+			auto           iter = cbefore_begin();
 			const_iterator prev;
 			while (++n != a_count) {
 				prev = iter;

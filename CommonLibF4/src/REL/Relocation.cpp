@@ -1,71 +1,34 @@
 #include "REL/Relocation.h"
 
-#define WIN32_LEAN_AND_MEAN
-
-#define NOGDICAPMASKS
-#define NOVIRTUALKEYCODES
-#define NOWINMESSAGES
-#define NOWINSTYLES
-#define NOSYSMETRICS
-#define NOMENUS
-#define NOICONS
-#define NOKEYSTATES
-#define NOSYSCOMMANDS
-#define NORASTEROPS
-#define NOSHOWWINDOW
-#define OEMRESOURCE
-#define NOATOM
-#define NOCLIPBOARD
-#define NOCOLOR
-#define NOCTLMGR
-#define NODRAWTEXT
-#define NOGDI
-#define NOKERNEL
-#define NOUSER
-#define NONLS
-#define NOMB
-#define NOMEMMGR
-#define NOMETAFILE
-#define NOMINMAX
-#define NOMSG
-#define NOOPENFILE
-#define NOSCROLL
-#define NOSERVICE
-#define NOSOUND
-#define NOTEXTMETRIC
-#define NOWH
-#define NOWINOFFSETS
-#define NOCOMM
-#define NOKANJI
-#define NOHELP
-#define NOPROFILER
-#define NODEFERWINDOWPOS
-#define NOMCX
-
-#include <Windows.h>
+#include "REX/W32/KERNEL32.h"
 
 namespace REL
 {
-	void Module::load_segments()
+	void safe_write(std::uintptr_t a_dst, const void* a_src, std::size_t a_count)
 	{
-		auto dosHeader = reinterpret_cast<const ::IMAGE_DOS_HEADER*>(_base);
-		auto ntHeader = stl::adjust_pointer<::IMAGE_NT_HEADERS64>(dosHeader, dosHeader->e_lfanew);
-		const auto* sections = IMAGE_FIRST_SECTION(ntHeader);
-		const auto size = std::min<std::size_t>(ntHeader->FileHeader.NumberOfSections, _segments.size());
-		for (std::size_t i = 0; i < size; ++i) {
-			const auto& section = sections[i];
-			const auto it = std::find_if(
-				SEGMENTS.begin(),
-				SEGMENTS.end(),
-				[&](auto&& a_elem) {
-					constexpr auto size = std::extent_v<decltype(section.Name)>;
-					const auto len = std::min(a_elem.size(), size);
-					return std::memcmp(a_elem.data(), section.Name, len) == 0;
-				});
-			if (it != SEGMENTS.end()) {
-				const auto idx = static_cast<std::size_t>(std::distance(SEGMENTS.begin(), it));
-				_segments[idx] = Segment{ _base, _base + section.VirtualAddress, section.Misc.VirtualSize };
-			}
+		std::uint32_t old{ 0 };
+		bool          success = REX::W32::VirtualProtect(
+					 reinterpret_cast<void*>(a_dst), a_count, REX::W32::PAGE_EXECUTE_READWRITE, std::addressof(old));
+		if (success) {
+			std::memcpy(reinterpret_cast<void*>(a_dst), a_src, a_count);
+			success = REX::W32::VirtualProtect(
+				reinterpret_cast<void*>(a_dst), a_count, old, std::addressof(old));
 		}
+
+		assert(success);
+	}
+
+	void safe_fill(std::uintptr_t a_dst, std::uint8_t a_value, std::size_t a_count)
+	{
+		std::uint32_t old{ 0 };
+		bool          success = REX::W32::VirtualProtect(
+					 reinterpret_cast<void*>(a_dst), a_count, REX::W32::PAGE_EXECUTE_READWRITE, std::addressof(old));
+		if (success) {
+			std::fill_n(reinterpret_cast<std::uint8_t*>(a_dst), a_count, a_value);
+			success = REX::W32::VirtualProtect(
+				reinterpret_cast<void*>(a_dst), a_count, old, std::addressof(old));
+		}
+
+		assert(success);
 	}
 }

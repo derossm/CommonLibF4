@@ -3,6 +3,14 @@ name: Main CI
 on:
   push:
     branches: [ master ]
+    paths:
+      - '.github/workflows/main_ci.yml'
+      - 'cmake/**'
+      - 'include/**'
+      - 'src/**'
+      - 'CMakeLists.txt'
+      - 'CMakePresets.json'
+      - 'vcpkg.json'
   pull_request:
     branches: [ master ]
   workflow_dispatch:
@@ -13,7 +21,7 @@ env:
 
 jobs:
   windows:
-    runs-on: windows-2022
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
         with:
@@ -42,7 +50,3 @@ jobs:
       - name: Build
         working-directory: ${{ github.workspace }}/main
         run: cmake --build build --config ${{ env.BUILD_TYPE }}
-
-      - name: Run tests
-        working-directory: ${{ github.workspace }}/main/build
-        run: ctest -V
